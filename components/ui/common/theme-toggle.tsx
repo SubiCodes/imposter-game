@@ -10,19 +10,18 @@ const ThemeToggle = () => {
         dark: MoonStarIcon,
     };
 
-    function ThemeToggle() {
-        const { colorScheme, toggleColorScheme } = useColorScheme();
+    const { colorScheme, toggleColorScheme } = useColorScheme();
 
-        return (
-            <Button
-                onPressIn={toggleColorScheme}
-                size="icon"
-                variant="ghost"
-                className="ios:size-9 rounded-full web:mx-4">
-                <Icon as={THEME_ICONS[colorScheme ?? 'light']} className="size-5" />
-            </Button>
-        );
-    }
+    return (
+        <Button
+            onPressIn={toggleColorScheme}
+            size="icon"
+            variant="ghost"
+            className="ios:size-9 rounded-full web:mx-4 p-0">
+            <Icon as={THEME_ICONS[colorScheme ?? 'light']} className="size-5" />
+        </Button>
+    );
+
 }
 
 export default ThemeToggle
