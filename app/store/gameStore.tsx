@@ -9,6 +9,7 @@ interface GameStoreState {
     gameWords: GameWord[];
     readonly gameTimers: readonly GameTimer[];
     startGame: (game: GamePayload, router: any) => void;
+    playAgain: (previousGame: any, router: any) => void;
 }
 
 const useGameStore = create<GameStoreState>((set) => ({
@@ -37,6 +38,33 @@ const useGameStore = create<GameStoreState>((set) => ({
             imposter: imposter,
         };
         router.push({ pathname: '/view-word', params: { gamePayload: JSON.stringify(finalGamePayload) } });
+    },
+    playAgain: (previousGame: any, router: any) => {
+        // Reuse the same players and categories, but randomize imposter and word
+        const imposter = previousGame.players[Math.floor(Math.random() * previousGame.players.length)];
+        
+        // Get a new random word from the same categories
+        const availableWords = gameWords
+            .filter(gw => previousGame.categories.includes(gw.category))
+            .map(gw => gw.word);
+        const word = availableWords[Math.floor(Math.random() * availableWords.length)];
+        
+        // Get clue if the previous game had clues enabled (check if clue exists)
+        let clue = null;
+        if (previousGame.clue !== null && previousGame.clue !== undefined) {
+            clue = gameWords.find(gw => gw.word === word)?.clue || null;
+        }
+        
+        const finalGamePayload = {
+            players: previousGame.players,
+            categories: previousGame.categories,
+            word: word,
+            clue: clue,
+            timer: previousGame.timer,
+            imposter: imposter,
+        };
+        
+        router.replace({ pathname: '/view-word', params: { gamePayload: JSON.stringify(finalGamePayload) } });
     },
 }));
 

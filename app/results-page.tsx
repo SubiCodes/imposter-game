@@ -1,14 +1,16 @@
-import { View, Text as RNText, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import { View, Text as RNText, TouchableOpacity, ScrollView, Alert } from 'react-native'
+import React, { useLayoutEffect, useEffect } from 'react'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { FinalGamePayload } from './view-word';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
+import useGameStore from './store/gameStore';
 
 const ResultsPage = () => {
     const params = useLocalSearchParams();
     const navigation = useNavigation();
     const router = useRouter();
+    const playAgain = useGameStore((state) => state.playAgain);
     
     const gamePayload: FinalGamePayload = params.gamePayload ? JSON.parse(params.gamePayload as string) : null;
     const votedPlayer = params.votedPlayer as string | null;
@@ -41,7 +43,33 @@ const ResultsPage = () => {
         });
     }, [navigation, playersWin]);
 
-    const handlePlayAgain = () => {
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+            e.preventDefault();
+            Alert.alert(
+                '🎭 Leave Results?',
+                'Are you sure you want to go back to the menu? You can play again with the same players!',
+                [
+                    { text: "Stay", style: 'cancel' },
+                    {
+                        text: 'Back to Menu',
+                        style: 'destructive',
+                        onPress: () => {
+                            unsubscribe();
+                            router.replace('/');
+                        },
+                    },
+                ]
+            );
+        });
+        return unsubscribe;
+    }, [navigation, router]);
+
+    const handlePlayAgainClick = () => {
+        playAgain(gamePayload, router);
+    };
+
+    const handleBackToMenu = () => {
         router.replace('/');
     };
 
@@ -191,14 +219,25 @@ const ResultsPage = () => {
                 </View>
             </ScrollView>
 
-            {/* Play Again Button */}
-            <View className={`w-full px-4 py-6 ${playersWin ? 'bg-green-950' : 'bg-red-950'} border-t-4 ${playersWin ? 'border-green-600' : 'border-red-700'}`}>
+            {/* Action Buttons */}
+            <View className={`w-full px-4 py-6 ${playersWin ? 'bg-green-950' : 'bg-red-950'} border-t-4 ${playersWin ? 'border-green-600' : 'border-red-700'} gap-3`}>
+                {/* Play Again with Same Players */}
                 <TouchableOpacity
                     className={`w-full ${playersWin ? 'bg-green-700 border-green-500' : 'bg-red-700 border-red-500'} border-2 shadow-2xl py-4 items-center justify-center rounded-lg`}
-                    onPress={handlePlayAgain}
+                    onPress={handlePlayAgainClick}
                 >
                     <Text className={`${playersWin ? 'text-green-100' : 'text-red-100'} font-extrabold text-lg tracking-widest`}>
-                        🎮 PLAY AGAIN 🎮
+                        🔄 PLAY AGAIN 🔄
+                    </Text>
+                </TouchableOpacity>
+                
+                {/* Back to Menu */}
+                <TouchableOpacity
+                    className='w-full bg-gray-700 border-2 border-yellow-500 shadow-2xl py-4 items-center justify-center rounded-lg'
+                    onPress={handleBackToMenu}
+                >
+                    <Text className='text-yellow-300 font-extrabold text-base tracking-widest'>
+                        🏠 BACK TO MENU
                     </Text>
                 </TouchableOpacity>
             </View>
