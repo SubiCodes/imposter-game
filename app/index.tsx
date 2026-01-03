@@ -16,6 +16,21 @@ import useGameStore from './store/gameStore';
 import { GameCategory } from './categories-topics/gameCategories';
 import { CircleAlert } from 'lucide-react-native';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Button } from '@/components/ui/button';
+
+interface GamePayload {
+  categories: string[];
+  customTopics?: string[];
+  players: string[];
+  clue: boolean;
+  timeInMs: number;
+}
+
+// Helper function to convert time string to milliseconds
+function timeToMilliseconds(time: string): number {
+  const [minutes, seconds] = time.split(':').map(Number);
+  return (minutes * 60 + seconds) * 1000;
+}
 
 const Index = () => {
   const navigation = useNavigation();
@@ -81,6 +96,22 @@ const Index = () => {
   const gameTimers = useGameStore((state) => state.gameTimers);
   const [selectedTimer, setSelectedTimer] = useState<string>('1:00');
 
+  const handleSubmit = () => {
+    const payload: GamePayload = {
+      categories: selectedCategories,
+      players: players,
+      clue: clues === 'yes',
+      timeInMs: timeToMilliseconds(selectedTimer),
+    };
+
+    // Add customTopics only if Custom category is selected
+    if (selectedCategories.includes("✏️ Custom")) {
+      payload.customTopics = customTopics;
+    }
+
+    console.log('Game Configuration:', payload);
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
@@ -93,7 +124,7 @@ const Index = () => {
 
 
   return (
-    <SafeAreaView className='flex flex-1 overflow-auto px-2 pt-[-24] bg-[#f2f3f4]'>
+    <SafeAreaView className='flex flex-1 overflow-auto px-2 pt-[-24] pb-4 bg-[#f2f3f4]'>
       <ScrollView contentContainerClassName='gap-2 pb-12 bg-transparent'>
         {/* CARD FOR CATEGORY SELECTION */}
         <Card className='border-gray-200'>
@@ -284,6 +315,15 @@ const Index = () => {
           </CardFooter>
         </Card>
       </ScrollView>
+
+      <Button 
+        className='w-full bg-green-500'
+        disabled={(selectedCategories.includes("✏️ Custom") && customTopics.length < 3) || players.length < 3}
+        onPress={handleSubmit}
+      >
+        <Text className='text-white font-bold'>Start Game</Text>
+      </Button>
+
     </SafeAreaView>
   )
 }
