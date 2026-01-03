@@ -1,5 +1,5 @@
 import { View, Text as RNText, TouchableOpacity, ScrollView, Alert } from 'react-native'
-import React, { useLayoutEffect, useEffect } from 'react'
+import React, { useLayoutEffect, useEffect, useRef } from 'react'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { FinalGamePayload } from './view-word';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ const ResultsPage = () => {
     const navigation = useNavigation();
     const router = useRouter();
     const playAgain = useGameStore((state) => state.playAgain);
+    const navigationListenerRef = useRef<(() => void) | null>(null);
     
     const gamePayload: FinalGamePayload = params.gamePayload ? JSON.parse(params.gamePayload as string) : null;
     const votedPlayer = params.votedPlayer as string | null;
@@ -62,14 +63,25 @@ const ResultsPage = () => {
                 ]
             );
         });
+        navigationListenerRef.current = unsubscribe;
         return unsubscribe;
     }, [navigation, router]);
 
     const handlePlayAgainClick = () => {
+        // Remove navigation listener before playing again
+        if (navigationListenerRef.current) {
+            navigationListenerRef.current();
+            navigationListenerRef.current = null;
+        }
         playAgain(gamePayload, router);
     };
 
     const handleBackToMenu = () => {
+        // Remove navigation listener before going back
+        if (navigationListenerRef.current) {
+            navigationListenerRef.current();
+            navigationListenerRef.current = null;
+        }
         router.replace('/');
     };
 

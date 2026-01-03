@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Imposter-Game",
+    "name": "Imposter Game",
     "slug": "Imposter-Game",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo-splash/logo.png",
     "scheme": "Imposter-Game",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/logo-splash/splash_sreen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#7f1d1d"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -22,14 +22,15 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/images/logo-splash/logo.png",
+        "backgroundColor": "#7f1d1d"
+      },
+      "package": "com.imposter.game"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/logo-splash/logo.png"
     },
     "plugins": [
       "expo-router",
