@@ -18,8 +18,9 @@ import { GameCategory } from './categories-topics/gameCategories';
 import { CircleAlert } from 'lucide-react-native';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
+import { StartGameDialog } from '@/components/dialogs/start-game-dialog';
 
-interface GamePayload {
+export interface GamePayload {
   categories: string[];
   customTopics?: string[];
   players: string[];
@@ -97,6 +98,8 @@ const Index = () => {
   const gameTimers = useGameStore((state) => state.gameTimers);
   const [selectedTimer, setSelectedTimer] = useState<string>('1:00');
 
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const [gamePayload, setGamePayload] = useState<GamePayload | undefined>(undefined);
   const handleSubmit = () => {
     const payload: GamePayload = {
       categories: selectedCategories,
@@ -108,7 +111,10 @@ const Index = () => {
     // Add customTopics only if Custom category is selected
     if (selectedCategories.includes("✏️ Custom")) {
       payload.customTopics = customTopics;
-    }
+    };
+
+    setGamePayload(payload);
+    setIsSubmitOpen(true);
 
     console.log('Game Configuration:', payload);
   };
@@ -343,6 +349,7 @@ const Index = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      <StartGameDialog open={isSubmitOpen} onOpenChange={setIsSubmitOpen} gamePayload={gamePayload} />
     </SafeAreaView>
   )
 }
