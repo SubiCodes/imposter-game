@@ -36,7 +36,6 @@ const useGameStore = create<GameStoreState>((set) => ({
             timer: game.timeInMs,
             imposter: imposter,
         };
-        console.log('Final Game Payload:', finalGamePayload);
         router.push({ pathname: '/view-word', params: { gamePayload: JSON.stringify(finalGamePayload) } });
     },
 }));

@@ -5,9 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { TouchableOpacity } from 'react-native';
-import FlashCard from '@/components/flashcards/word-flash-card';
+import SimpleFlashCard from '@/components/flashcards/simple-word-flash-card';
 
-interface FinalGamePayload {
+export interface FinalGamePayload {
     players: string[];
     categories: string[];
     word: string;
@@ -21,13 +21,19 @@ const ViewWord = () => {
     const navigation = useNavigation();
     const router = useRouter();
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-    
+
     // Parse the game payload
-    const gamePayload: FinalGamePayload = params.gamePayload 
-        ? JSON.parse(params.gamePayload as string) 
-        : null;
+    let gamePayload: FinalGamePayload | null = null;
+    try {
+        gamePayload = params.gamePayload
+            ? JSON.parse(params.gamePayload as string)
+            : null;
+    } catch (error) {
+        console.error('ViewWord - Error parsing game payload:', error);
+    }
 
     if (!gamePayload) {
+        console.log('ViewWord - No game payload, showing error');
         return (
             <SafeAreaView className='flex flex-1 bg-gray-900 items-center justify-center'>
                 <RNText className='text-yellow-400 text-lg'>No game data found</RNText>
@@ -44,10 +50,10 @@ const ViewWord = () => {
             // Move to next player
             setCurrentPlayerIndex(currentPlayerIndex + 1);
         } else {
-            // All players have seen their words, navigate to game screen
-            // For now, just log
-            console.log('All players done, starting game...');
-            // TODO: Navigate to game/timer screen
+            router.push({
+                pathname: '/conversation-page',
+                params: { gamePayload: JSON.stringify(gamePayload) }
+            });
         }
     };
 
@@ -61,7 +67,7 @@ const ViewWord = () => {
                 '🎭 End Game?',
                 'Are you sure you want to leave? The game will end and all progress will be lost.',
                 [
-                    { text: "Stay", style: 'cancel', onPress: () => {} },
+                    { text: "Stay", style: 'cancel', onPress: () => { } },
                     {
                         text: 'Yes, End Game',
                         style: 'destructive',
@@ -91,7 +97,7 @@ const ViewWord = () => {
         <SafeAreaView className='flex flex-1 bg-gray-900'>
             {/* Center space for FlashCard */}
             <View className='flex-1 justify-center items-center px-4'>
-                <FlashCard 
+                <SimpleFlashCard
                     data={{
                         playerName: currentPlayer,
                         word: gamePayload.word,
@@ -105,7 +111,7 @@ const ViewWord = () => {
 
             {/* Bottom button */}
             <View className='w-full px-4 py-6 bg-gray-950 border-t-4 border-yellow-600'>
-                <TouchableOpacity 
+                <TouchableOpacity
                     className='w-full bg-red-700 border-2 border-yellow-500 shadow-2xl py-4 items-center justify-center rounded-lg'
                     onPress={handleNext}
                 >
