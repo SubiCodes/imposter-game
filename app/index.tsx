@@ -1,7 +1,7 @@
 import { View, Text, Platform, ScrollView, TextInput, Pressable } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Card,
   CardContent,
@@ -77,6 +77,9 @@ const Index = () => {
       setClues('no');
     };
   }, [selectedCategories]);
+
+  const gameTimers = useGameStore((state) => state.gameTimers);
+  const [selectedTimer, setSelectedTimer] = useState<string>('1:00');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -231,8 +234,8 @@ const Index = () => {
             <RadioGroup value={clues} onValueChange={(val) => onClickClueToggle(val as 'yes' | 'no')} className='flex-row' disabled={selectedCategories.includes("✏️ Custom")}>
               <View className='flex-row items-center gap-2'>
                 <RadioGroupItem value="yes" id="r2" disabled={selectedCategories.includes("✏️ Custom")} />
-                <Label 
-                  htmlFor="r2" 
+                <Label
+                  htmlFor="r2"
                   onPress={selectedCategories.includes("✏️ Custom") ? undefined : () => onClickClueToggle('yes')}
                   disabled={selectedCategories.includes("✏️ Custom")}
                 >
@@ -241,8 +244,8 @@ const Index = () => {
               </View>
               <View className='flex-row items-center gap-2'>
                 <RadioGroupItem value="no" id="r1" disabled={selectedCategories.includes("✏️ Custom")} />
-                <Label 
-                  htmlFor="r1" 
+                <Label
+                  htmlFor="r1"
                   onPress={selectedCategories.includes("✏️ Custom") ? undefined : () => onClickClueToggle('no')}
                   disabled={selectedCategories.includes("✏️ Custom")}
                 >
@@ -251,9 +254,33 @@ const Index = () => {
               </View>
             </RadioGroup>
           </CardContent>
-           <CardFooter className='gap-2'>
+          <CardFooter className='gap-2'>
             <CircleAlert className='mr-2' size={16} color='orange' />
             <Text className='text-xs text-muted-foreground'>When using custom category, no clues allowed.</Text>
+          </CardFooter>
+        </Card>
+
+        {/* CARD FOR SETTING THE COVERSATION TIME */}
+        <Card className='border-gray-200'>
+          <CardHeader>
+            <CardTitle>Set conversation time</CardTitle>
+            <CardDescription>Decide how long the conversation lasts</CardDescription>
+          </CardHeader>
+          <CardContent className='flex flex-row items-center gap-4'>
+            <RadioGroup value={selectedTimer} onValueChange={(val) => setSelectedTimer(val)} className='flex-row flex-wrap gap-4'>
+              {gameTimers.map((timer) => (
+                <View key={timer} className='flex-row items-center gap-2'>
+                  <RadioGroupItem value={timer} id={`timer-${timer}`} />
+                  <Label htmlFor={`timer-${timer}`} onPress={() => setSelectedTimer(timer)}>
+                    🕰️ {timer}
+                  </Label>
+                </View>
+              ))}
+            </RadioGroup>
+          </CardContent>
+          <CardFooter className='gap-2'>
+            <CircleAlert className='mr-2' size={16} color='orange' />
+            <Text className='text-xs text-muted-foreground'>Set the duration for the conversation time.</Text>
           </CardFooter>
         </Card>
       </ScrollView>
