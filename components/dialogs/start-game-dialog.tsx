@@ -11,6 +11,8 @@ import {
 import { Text } from 'react-native';
 import { View } from 'react-native';
 import { GamePayload } from '@/app/index';
+import useGameStore from '@/app/store/gameStore';
+import { useRouter } from 'expo-router';
 
 interface StartGameDialogProps {
     open: boolean;
@@ -30,7 +32,15 @@ export function StartGameDialog({ open, onOpenChange, gamePayload }: StartGameDi
 
     if (gamePayload === undefined) {
         return null; // or some fallback UI
-    }
+    };
+
+    const router = useRouter();
+    const startGame = useGameStore((state) => state.startGame);
+
+    const handleSubmit = () => {
+        onOpenChange(false);
+        startGame(gamePayload, router);
+    };
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -82,7 +92,7 @@ export function StartGameDialog({ open, onOpenChange, gamePayload }: StartGameDi
                     </AlertDialogCancel>
                     <AlertDialogAction
                         className='bg-red-700 border-2 border-yellow-500'
-                        onPress={() => {}}
+                        onPress={() => {handleSubmit();}}
                     >
                         <Text className='text-yellow-300 font-bold'>🎭 Start Game</Text>
                     </AlertDialogAction>

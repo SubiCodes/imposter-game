@@ -115,8 +115,6 @@ const Index = () => {
 
     setGamePayload(payload);
     setIsSubmitOpen(true);
-
-    console.log('Game Configuration:', payload);
   };
 
   useLayoutEffect(() => {
