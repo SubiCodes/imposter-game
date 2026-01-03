@@ -1,7 +1,9 @@
-import { View, Text, Platform, StatusBar } from 'react-native'
+import { View, Text, Platform } from 'react-native'
 import React, { useLayoutEffect } from 'react'
 import ThemeToggle from '@/components/ui/common/theme-toggle'
 import { useNavigation } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Index = () => {
   const navigation = useNavigation();
@@ -9,34 +11,8 @@ const Index = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
-        <View
-          className='flex flex-row w-full items-center justify-end'
-          style={{
-            paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 50,
-            paddingBottom: 15,
-            paddingHorizontal: 15,
-          }}>
-
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              alignItems: 'center',
-              paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 50,
-            }}
-            pointerEvents="none"
-          >
-            <Text
-              className='font-bold text-red-500 text-lg'
-              numberOfLines={1}
-            >
-              Imposter Game
-            </Text>
-          </View>
-          <View className='items-center justify-end'>
-            <ThemeToggle />
-          </View>
+        <View className='flex items-center justify-center bg-red-500 pt-10 pb-4'>
+         <Text className='font-bold text-white text-4xl'>IMPOSTER GAME</Text>
         </View>
       ),
     });
@@ -44,9 +20,9 @@ const Index = () => {
 
 
   return (
-    <View>
-      <Text>Index</Text>
-    </View>
+    <SafeAreaView className='flex flex-1 overflow-auto'>
+
+    </SafeAreaView>
   )
 }
 

@@ -22,9 +22,7 @@ export default function RootLayout() {
   const { colorScheme } = useColorScheme();
 
   const [fontsLoaded] = useFonts({
-    // Add your custom fonts here
-    // Example: 'Poppins-Regular': require('@/assets/fonts/Poppins-Regular.ttf'),
-    // 'Poppins-Bold': require('@/assets/fonts/Poppins-Bold.ttf'),
+    'Frijole': require('@/assets/fonts/Frijole-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -38,10 +36,18 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+    <ThemeProvider value={NAV_THEME['light']}>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} translucent={true} />
       <Stack />
       <PortalHost />
     </ThemeProvider>
   );
 }
+
+{/* <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
+  <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+  <Stack />
+  <PortalHost />
+</ThemeProvider> 
+  DEFAULT WAY
+*/}
