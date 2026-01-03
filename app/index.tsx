@@ -46,6 +46,15 @@ const Index = () => {
   const [players, setPlayers] = useState<string[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<string>('');
 
+  // Prevent back navigation from index page
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      // Prevent default behavior - no back navigation from home
+      e.preventDefault();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   const addTopic = () => {
     const trimmedTopic = currentTopic.trim();
     if (trimmedTopic && !customTopics.includes(trimmedTopic)) {
