@@ -78,7 +78,7 @@ const VotingPage = () => {
     setShowConfirmDialog(false);
     // TODO: Navigate to results page with selected player
     console.log('Moving to results with vote:', selectedPlayer);
-    // router.push({ pathname: '/results-page', params: { gamePayload: JSON.stringify(gamePayload), votedPlayer: selectedPlayer } });
+    router.push({ pathname: '/results-page', params: { gamePayload: JSON.stringify(gamePayload), votedPlayer: selectedPlayer } });
   };
 
   return (
