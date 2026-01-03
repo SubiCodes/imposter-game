@@ -1,5 +1,5 @@
 import { View, Text, Platform, ScrollView, TextInput, Pressable } from 'react-native'
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import useGameStore from './store/gameStore';
 import { GameCategory } from './categories-topics/gameCategories';
 import { CircleAlert } from 'lucide-react-native';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const Index = () => {
   const navigation = useNavigation();
@@ -67,10 +68,20 @@ const Index = () => {
     });
   };
 
+  const [clues, setClues] = useState<'yes' | 'no'>('no');
+  const onClickClueToggle = (value: 'yes' | 'no') => {
+    setClues(value);
+  };
+  useEffect(() => {
+    if (selectedCategories.includes("✏️ Custom")) {
+      setClues('no');
+    };
+  }, [selectedCategories]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
-        <View className='flex items-center justify-center bg-green-400 pt-10 pb-4'>
+        <View className='flex items-center justify-center bg-green-500 pt-10 pb-4'>
           <Text className='font-bold text-white text-4xl'>IMPOSTER GAME</Text>
         </View>
       ),
@@ -207,6 +218,42 @@ const Index = () => {
           <CardFooter className='gap-2'>
             <CircleAlert className='mr-2' size={16} color='orange' />
             <Text className='text-xs text-muted-foreground'>At least three players required.</Text>
+          </CardFooter>
+        </Card>
+
+        {/* CARD FOR SETTING IF THERE IS A CLUE */}
+        <Card className='border-gray-200'>
+          <CardHeader>
+            <CardTitle>Give imposter a clue?</CardTitle>
+            <CardDescription>Decide wether imposter gets a clue or not</CardDescription>
+          </CardHeader>
+          <CardContent className='flex flex-row items-center gap-4'>
+            <RadioGroup value={clues} onValueChange={(val) => onClickClueToggle(val as 'yes' | 'no')} className='flex-row' disabled={selectedCategories.includes("✏️ Custom")}>
+              <View className='flex-row items-center gap-2'>
+                <RadioGroupItem value="yes" id="r2" disabled={selectedCategories.includes("✏️ Custom")} />
+                <Label 
+                  htmlFor="r2" 
+                  onPress={selectedCategories.includes("✏️ Custom") ? undefined : () => onClickClueToggle('yes')}
+                  disabled={selectedCategories.includes("✏️ Custom")}
+                >
+                  Yes
+                </Label>
+              </View>
+              <View className='flex-row items-center gap-2'>
+                <RadioGroupItem value="no" id="r1" disabled={selectedCategories.includes("✏️ Custom")} />
+                <Label 
+                  htmlFor="r1" 
+                  onPress={selectedCategories.includes("✏️ Custom") ? undefined : () => onClickClueToggle('no')}
+                  disabled={selectedCategories.includes("✏️ Custom")}
+                >
+                  No
+                </Label>
+              </View>
+            </RadioGroup>
+          </CardContent>
+           <CardFooter className='gap-2'>
+            <CircleAlert className='mr-2' size={16} color='orange' />
+            <Text className='text-xs text-muted-foreground'>When using custom category, no clues allowed.</Text>
           </CardFooter>
         </Card>
       </ScrollView>
