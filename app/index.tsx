@@ -1,4 +1,4 @@
-import { View, Text, Platform, ScrollView } from 'react-native'
+import { View, Text, Platform, ScrollView, TextInput, Pressable } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { useGameStore } from './store/gameStore';
+import useGameStore from './store/gameStore';
 import { GameCategory } from './categories-topics/gameCategories';
 import { CircleAlert } from 'lucide-react-native';
 
@@ -23,23 +23,44 @@ const Index = () => {
   const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>(
     gameCategories.filter(category => category !== "✏️ Custom")
   );
+  const [customTopics, setCustomTopics] = useState<string[]>([]);
+  const [currentTopic, setCurrentTopic] = useState<string>('');
+  const [players, setPlayers] = useState<string[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<string>('');
+
+  const addTopic = () => {
+    const trimmedTopic = currentTopic.trim();
+    if (trimmedTopic && !customTopics.includes(trimmedTopic)) {
+      setCustomTopics((prev) => [...prev, trimmedTopic]);
+      setCurrentTopic('');
+    }
+  };
+
+  const removeTopic = (topic: string) => {
+    setCustomTopics((prev) => prev.filter(t => t !== topic));
+  };
+
+  const addPlayer = () => {
+    const trimmedPlayer = currentPlayer.trim();
+    if (trimmedPlayer && !players.includes(trimmedPlayer)) {
+      setPlayers((prev) => [...prev, trimmedPlayer]);
+      setCurrentPlayer('');
+    }
+  };
+
+  const removePlayer = (player: string) => {
+    setPlayers((prev) => prev.filter(p => p !== player));
+  };
 
   const toggleCategory = (category: GameCategory) => {
     setSelectedCategories((prev) => {
-      // Don't allow deselecting if it's the only selected category
       if (prev.length === 1 && prev.includes(category)) {
         return prev;
       }
-      
-      // If clicking Custom, deselect all others and only select Custom
       if (category === "✏️ Custom") {
         return prev.includes(category) ? [] : [category];
       }
-      
-      // If clicking any other category, remove Custom if it's selected
       const withoutCustom = prev.filter(c => c !== "✏️ Custom");
-      
-      // Toggle the clicked category
       return withoutCustom.includes(category)
         ? withoutCustom.filter(c => c !== category)
         : [...withoutCustom, category];
@@ -58,20 +79,23 @@ const Index = () => {
 
 
   return (
-    <SafeAreaView className='flex flex-1 overflow-auto px-2'>
-      <Card className='border-gray-200'>
-        <CardHeader>
-          <CardTitle>Select Category / Categories</CardTitle>
-          <CardDescription>Choose what the topic would be about!</CardDescription>
-        </CardHeader>
-        <CardContent className='overflow-auto'>
-          <ScrollView className='flex-col max-h-36 px-4 py-2 rounded-md border border-gray-200' persistentScrollbar={true}>
+    <SafeAreaView className='flex flex-1 overflow-auto px-2 pt-[-24] bg-[#f2f3f4]'>
+      <ScrollView contentContainerClassName='gap-2 pb-12 bg-transparent'>
+        {/* CARD FOR CATEGORY SELECTION */}
+        <Card className='border-gray-200'>
+          <CardHeader>
+            <CardTitle>Select Category / Categories</CardTitle>
+            <CardDescription>Choose what the topic would be about!</CardDescription>
+          </CardHeader>
+          <CardContent className='overflow-auto'>
             {gameCategories.map((category) => (
               <View key={category} className="flex flex-row items-center gap-1 mb-2">
                 <Checkbox
                   id={category}
                   checked={selectedCategories.includes(category)}
                   onCheckedChange={() => toggleCategory(category)}
+                  checkedClassName='border-green-700'
+                  indicatorClassName='bg-green-700'
                 />
                 <Label
                   onPress={Platform.select({ native: () => toggleCategory(category) })}
@@ -81,13 +105,111 @@ const Index = () => {
               </View>
             ))}
             <View className='h-4'></View>
-          </ScrollView>
-        </CardContent>
-        <CardFooter className='gap-2'>
-            <CircleAlert className='mr-2' size={16} color='orange'/>
+          </CardContent>
+          <CardFooter className='gap-2'>
+            <CircleAlert className='mr-2' size={16} color='orange' />
             <Text className='text-xs text-muted-foreground'>When Custom is selected, categories are disabled.</Text>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+
+        {/* CARD FOR WHEN CATEGORY IS CUSTOM */}
+        {selectedCategories.includes("✏️ Custom") && (
+          <Card className='border-gray-200'>
+            <CardHeader>
+              <CardTitle>Add Topics</CardTitle>
+              <CardDescription>Create your own topics!</CardDescription>
+            </CardHeader>
+            <CardContent className='overflow-auto'>
+              <View className='w-full flex-row border border-gray-400 px-4 py-2 gap-2 justify-center items-center rounded-md'>
+                <TextInput
+                  placeholder='Enter topic...'
+                  className='flex-1'
+                  value={currentTopic}
+                  onChangeText={setCurrentTopic}
+                  onSubmitEditing={addTopic}
+                />
+                <Pressable
+                  onPress={addTopic}
+                  disabled={!currentTopic.trim()}
+                  className={`px-2 py-1 rounded-md ${!currentTopic.trim() ? 'opacity-40' : ''}`}
+                >
+                  <Text className={`text-2xl font-bold ${currentTopic.trim() ? 'text-green-600' : 'text-gray-400'}`}>
+                    +
+                  </Text>
+                </Pressable>
+              </View>
+
+              {customTopics.length > 0 && (
+                <View className='mt-4'>
+                  <Text className='text-sm font-semibold mb-2'>Added Topics ({customTopics.length}):</Text>
+                  <View className='flex-row flex-wrap gap-2'>
+                    {customTopics.map((topic, index) => (
+                      <View key={index} className='flex-row items-center bg-green-100 px-3 py-2 rounded-md border border-green-300'>
+                        <Text className='text-sm mr-2'>{topic}</Text>
+                        <Pressable onPress={() => removeTopic(topic)}>
+                          <Text className='text-red-600 font-bold'>×</Text>
+                        </Pressable>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </CardContent>
+            <CardFooter className='gap-2'>
+              <CircleAlert className='mr-2' size={16} color='orange' />
+              <Text className='text-xs text-muted-foreground'>At least three topics required.</Text>
+            </CardFooter>
+          </Card>
+        )}
+
+        {/* CARD FOR ADDING PLAYERS */}
+        <Card className='border-gray-200'>
+          <CardHeader>
+            <CardTitle>Add Players</CardTitle>
+            <CardDescription>Enter the names of all players!</CardDescription>
+          </CardHeader>
+          <CardContent className='overflow-auto'>
+            <View className='w-full flex-row border border-gray-400 px-4 py-2 gap-2 justify-center items-center rounded-md'>
+              <TextInput
+                placeholder='Enter player name...'
+                className='flex-1'
+                value={currentPlayer}
+                onChangeText={setCurrentPlayer}
+                onSubmitEditing={addPlayer}
+              />
+              <Pressable
+                onPress={addPlayer}
+                disabled={!currentPlayer.trim()}
+                className={`px-2 py-1 rounded-md ${!currentPlayer.trim() ? 'opacity-40' : ''}`}
+              >
+                <Text className={`text-2xl font-bold ${currentPlayer.trim() ? 'text-green-600' : 'text-gray-400'}`}>
+                  +
+                </Text>
+              </Pressable>
+            </View>
+
+            {players.length > 0 && (
+              <View className='mt-4'>
+                <Text className='text-sm font-semibold mb-2'>Added Players ({players.length}):</Text>
+                <View className='flex-row flex-wrap gap-2'>
+                  {players.map((player, index) => (
+                    <View key={index} className='flex-row items-center bg-green-100 px-3 py-2 rounded-md border border-green-300'>
+                      <Text className='text-sm mr-2'>{player}</Text>
+                      <Pressable onPress={() => removePlayer(player)}>
+                        <Text className='text-red-600 font-bold'>×</Text>
+                      </Pressable>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+          </CardContent>
+          <CardFooter className='gap-2'>
+            <CircleAlert className='mr-2' size={16} color='orange' />
+            <Text className='text-xs text-muted-foreground'>At least three players required.</Text>
+          </CardFooter>
+        </Card>
+      </ScrollView>
     </SafeAreaView>
   )
 }

@@ -7,7 +7,9 @@ interface GameStoreState {
     gameWords: GameWord[];
 }
 
-export const useGameStore = create<GameStoreState>((set) => ({
+const useGameStore = create<GameStoreState>((set) => ({
     categories: gameCategories,
     gameWords: gameWords,
 }));
+
+export default useGameStore;
