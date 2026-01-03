@@ -35,6 +35,12 @@ const ConversationPage = () => {
     const [showSkipDialog, setShowSkipDialog] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Randomly select a player to start (memoized so it stays consistent)
+    const startingPlayer = useMemo(() => {
+        if (!gamePayload) return null;
+        return gamePayload.players[Math.floor(Math.random() * gamePayload.players.length)];
+    }, [gamePayload]);
+
     // Initialize background music with stable audio source
     const music = useBackgroundMusic(audioSource, 0.3);
 
@@ -143,6 +149,21 @@ const ConversationPage = () => {
 
     return (
         <SafeAreaView className='flex flex-1 bg-gray-900'>
+            {/* Starting Player Info */}
+            {!timerStarted && startingPlayer && (
+                <View className='px-6 py-4 bg-purple-900 border-b-4 border-purple-500'>
+                    <RNText className='text-purple-200 text-center text-base font-bold mb-1'>
+                        🎤 Starting Player
+                    </RNText>
+                    <RNText className='text-purple-100 text-center text-2xl font-extrabold'>
+                        {startingPlayer}
+                    </RNText>
+                    <RNText className='text-purple-300 text-center text-sm mt-1'>
+                        This player begins the conversation!
+                    </RNText>
+                </View>
+            )}
+
             {/* Main Timer Display */}
             <View className='flex-1 justify-center items-center px-4'>
                 <View className='bg-red-700 border-4 border-yellow-500 rounded-3xl p-12 shadow-2xl items-center justify-center min-w-[300px]'>
