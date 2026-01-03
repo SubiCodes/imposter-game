@@ -50,6 +50,12 @@ module.exports = {
       borderWidth: {
         hairline: hairlineWidth(),
       },
+      fontFamily: {
+        // Add your custom fonts here
+        // Example: 
+        // sans: ['Poppins-Regular', 'system-ui'],
+        // bold: ['Poppins-Bold', 'system-ui'],
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
