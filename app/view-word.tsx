@@ -14,6 +14,7 @@ export interface FinalGamePayload {
     clue: string | null;
     timer: number;
     imposter: string;
+    customTopics?: string[];
 }
 
 const ViewWord = () => {

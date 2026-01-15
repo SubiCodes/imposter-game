@@ -25,7 +25,11 @@
         "foregroundImage": "./assets/images/logo-splash/logo.png",
         "backgroundColor": "#7f1d1d"
       },
-      "package": "com.imposter.game"
+      "package": "com.imposter.game",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +43,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d871caee-e6a5-4722-9bc3-6984bd71728e"
+      }
     }
   }
 }
